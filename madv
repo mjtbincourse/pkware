@@ -1,0 +1,170 @@
+local enemyFolder = game:GetService("Workspace").Enemy
+local backpack = game:GetService("Players").LocalPlayer.Backpack
+local sellerFolder = game:GetService("Workspace").Seller
+local sellerNames = {}
+local workspaceTools = {}
+local enemyNames = {}
+local modelNames = {}
+local player = game.Players.LocalPlayer
+
+for _, seller in pairs(sellerFolder:GetChildren()) do
+    if seller:IsA("Model") then
+        local sellerName = seller.Name
+        if not table.find(sellerNames, sellerName) then
+            table.insert(sellerNames, sellerName)
+        end
+    end
+end
+
+for _, item in pairs(backpack:GetChildren()) do
+    if item:IsA("Tool") then
+        table.insert(modelNames, item.Name)
+    end
+end
+
+for _, item in pairs(enemyFolder:GetChildren()) do
+    if item:IsA("Model") then
+        local enemyName = item.Name
+        if not table.find(enemyNames, enemyName) then
+            table.insert(enemyNames, enemyName)
+        end
+    end
+end
+
+for _, item in pairs(game:GetService("Workspace"):GetChildren()) do
+    if item:IsA("Tool") and item.Parent == game:GetService("Workspace")[game.Players.LocalPlayer.Name] then
+        table.insert(workspaceTools, item.Name)
+    end
+end
+
+local lib = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/UI-Libs/main/Vape.txt"))()
+
+local win = lib:Window("PokerWare", Color3.fromRGB(44, 120, 224), Enum.KeyCode.RightControl)
+
+local tab = win:Tab("Main")
+
+tab:Slider("Adjust Cframe",0, 10,6, function(Pokke)
+    _G.adjustt = Pokke
+end)
+
+
+_G.adjustt = 6
+
+local toggleState = false
+
+local selectedWeapon = nil
+
+local toolDropdown = tab:Dropdown("Select Tool", modelNames, function(toolName)
+    selectedWeapon = toolName
+end)
+
+for _, toolName in pairs(workspaceTools) do
+    toolDropdown:AddOption(toolName)
+end
+
+game:GetService("Players").LocalPlayer.Character.Humanoid.Died:Connect(onCharacterDied)
+
+local function autoTp()
+    while toggleState do
+        for _, enemy in pairs(enemyFolder:GetChildren()) do
+            if enemy:IsA("Model") and enemy:FindFirstChild("lvl") then
+                local enemyLevel = enemy.lvl.Value
+                local myLevel = game:GetService("Players").LocalPlayer.Stats.Level.Value
+                if enemyLevel <= myLevel then
+                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = enemy.PrimaryPart.CFrame - enemy.PrimaryPart.CFrame.lookVector * _G.adjustt
+                    break
+                end
+            end
+        end
+        task.wait()
+    end
+end
+
+local function autoUse()
+    while toggleState do
+        if selectedWeapon then
+            local tool = backpack:FindFirstChild(selectedWeapon)
+            if not tool then
+                tool = game:GetService("Workspace")[game.Players.LocalPlayer.Name]:FindFirstChild(selectedWeapon)
+                if tool then
+                    tool.Parent = backpack
+                    tool.Parent = game.Players.LocalPlayer.Character
+                end
+            end
+            if tool then
+                tool.Parent = game.Players.LocalPlayer.Character
+                tool:Activate()
+            end
+        end
+        task.wait(1)
+    end
+end
+
+tab:Toggle("Full-Autofarm", toggleState, function(state)
+    toggleState = state
+    if toggleState then
+        coroutine.wrap(autoTp)()
+        coroutine.wrap(autoUse)()
+    end
+end)
+
+tab:Toggle("Auto-Fruit", toggleState, function(nigag)
+_G.yes = nigag
+while _G.yes do
+    task.wait()
+for _, tool in pairs(game.Workspace:GetChildren()) do
+    if tool:IsA("Tool") then
+        player.Character.HumanoidRootPart.CFrame = tool.Handle.CFrame
+    end
+end
+end
+end)
+
+local stats = win:Tab("Teleports")
+
+local sellerDropdown = stats:Dropdown("Seller", sellerNames, function(sellerName)
+    selectedSeller = sellerName
+end)
+
+local teleportButton = stats:Button("Teleport Selected", function()
+    if selectedSeller then
+        local seller = sellerFolder:FindFirstChild(selectedSeller)
+        if seller then
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = seller.PrimaryPart.CFrame - seller.PrimaryPart.CFrame.lookVector * _G.adjustt
+        end
+    end
+end)
+
+local misc = win:Tab("Misc")
+
+misc:Button("Inf Stats/Reset Stats", function()
+game:GetService("Players").LocalPlayer.PlayerGui.Status.Damage.Dm.LocalScript.RemoteEvent:FireServer(-math.huge)
+end)
+
+misc:Slider("Increase/Decrease Speed",0, 100,0, function(speedlol)
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = speedlol
+end)
+
+local contacts = win:Tab("Discord")
+
+contacts:Button("PokerWare", function()
+local http = game:GetService('HttpService')
+local req = (syn and syn.request) or (http and http.request) or http_request
+if req then
+req({
+Url = 'http://127.0.0.1:6463/rpc?v=1',
+Method = 'POST',
+Headers = {
+['Content-Type'] = 'application/json',
+Origin = 'https://discord.com'
+},
+Body = http:JSONEncode({
+cmd = 'INVITE_BROWSER',
+nonce = http:GenerateGUID(false),
+args = {code = 'R2GVFSbmDJ'}
+})
+})
+end
+end)
+
+game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 30
