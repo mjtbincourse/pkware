@@ -1,0 +1,17 @@
+local pk = "https://github.com/mjtbincourse/pkware/edit/main/"
+
+local games = {
+    [9566949295] = "madv",
+}
+
+for i, v in pairs(games) do
+    if i == game.PlaceId or i == game.GameId then
+        loadstring(game:HttpGet(pk .. v))()
+    end
+end
+
+game:GetService("Players").LocalPlayer.Idled:Connect(
+    function()
+        game:GetService("VirtualUser"):ClickButton2(Vector2.new())
+    end
+)
