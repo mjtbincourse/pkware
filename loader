@@ -1,4 +1,4 @@
-local pk = "https://github.com/mjtbincourse/pkware/edit/main/"
+local pk = "https://raw.githubusercontent.com/mjtbincourse/pkware/main/"
 
 local games = {
     [9566949295] = "madv",
