@@ -2,7 +2,7 @@ local pk = "https://raw.githubusercontent.com/mjtbincourse/pkware/main/"
 
 local games = {
     [9566949295] = "madv",
-    [12655796109] = "sgpp"
+    [12655796109] = "sgpp",
     [10464237910] = "dragonsea"
 }
 
